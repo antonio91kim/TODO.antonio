@@ -17,46 +17,58 @@ java -jar todo.antonio-1.0-SNAPSHOT.jar
 ### GET /api/todo
 할일 목록을 조회합니다.
 
-* Parameter
+#### Parameter
 
+|Parameter|Description|
+|---------|-----------|
 |pageNum| 페이지 번호|
 |itemsPerPage| 페이지당 할일 갯수|
 
 ### POST /api/todo
 할일을 등록합니다.
 
-* Parameter (json)
+#### Parameter (json)
 
-title 할일 내용
+|Parameter|Description|
+|---------|-----------|
+|title| 할일 내용|
 
 ### PUT /api/todo/{id}
 특정 아이디의 할일을 수정합니다.
 
-* Parameter (json)
+#### Parameter (json)
 
-id(Path) 할일 아이디
-title 변경된 할일 내용
+|Parameter|Description|
+|---------|-----------|
+|id(Path| 할일 아이디|
+|title| 변경된 할일 내용|
 
 ### DELETE /api/todo/{id}
 특정 아이디의 할일을 삭제합니다.
 
-* Parameter
+#### Parameter
 
-id(Path) 할일 아이디
+|Parameter|Description|
+|---------|-----------|
+|id(Path)| 할일 아이디|
 
 ### PUT /api/todo/{id}/complete
 특정 아이디의 할일을 완료합니다.
 
-* Parameter
+#### Parameter
 
-id(Path) 할일 아아디
+|Parameter|Description|
+|---------|-----------|
+|id(Path)| 할일 아아디|
 
 ### GET /api/todo/{id}
 특정 아이디의 할일을 조회합니다.
 
-* Parameter
+#### Parameter
 
-id(Path) 할일 아이디
+|Parameter|Description|
+|---------|-----------|
+|id(Path)| 할일 아이디|
 
 # 문제 해결
 
