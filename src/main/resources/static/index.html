@@ -1,0 +1,230 @@
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>TODO Application</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+  body {
+    width: 100%;
+    display: flex;
+    flex-flow: column;
+    align-content: center;
+  }
+  h1 {
+    width: 100%;
+    text-align: center;
+  }
+  h2 {
+    font-size: 20px;
+  }
+  form {
+    margin: 0 300px;
+    display: none;
+    text-align: center;
+    border: 1px solid #555;
+    padding: 15px;
+  }
+  form input {
+    height: 37px;
+  }
+  .btn {
+    width: 100px;
+  }
+  body > .btn {
+    margin: 30px;
+  }
+  table .btn {
+    height: 30px;
+    padding: 3px 6px;
+  }
+  #todo-table {
+    border: 1px solid #999;
+    margin: 0 30px;
+  }
+  #todo-table tr {
+    height: 30px;
+  }
+  #todo-table tr th {
+    text-align: center;
+  }
+  #todo-table tr td, #todo-table tr th {
+    padding: 5px 10px;
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+  }
+  #todo-table tr th:last-child, #todo-table tr td:last-child {
+    border-right: none;
+    text-align: center;
+  }
+  #todo-table tr:last-child td {
+    border-bottom: none;
+  }
+  nav {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  #pagination {
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+    <h1>Todo Application</h1>
+
+    <form id="insert-form" novalidate>
+        <h2>할일 등록</h2>
+        <input type="text" id="todo-insert" />
+        <button class="btn btn-dark" type="submit">입력</button>
+    </form>
+
+    <form id="update-form" novalidate>
+      <h2>할일 수정</h2>
+      <input type="text" id="todo-update" />
+      <input type="hidden" id="todo-update-id" />
+      <button class="btn btn-dark" type="submit">수정</button>
+    </form>
+
+    <button type="button" class="btn btn-primary" onclick="createForm()">등록</button>
+    <table id="todo-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>할 일 </th>
+                <th>작성 일시</th>
+                <th>최종 수정 일시</th>
+                <th>완료 처리</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    <nav>
+        <ul class="pagination" id="pagination">
+        </ul>
+    </nav>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+<script>
+    $(document).ready(_ => {
+      // initialize
+      movePage();
+
+        // create event
+        $("#insert-form").submit(e => {
+          console.log('insert');
+          e.preventDefault();
+          var data = {
+            title: $('#todo-insert').val()
+          };
+          $.ajax({
+            method: 'POST',
+            contentType: 'application/json',
+            url: 'http://localhost:8080/api/todo',
+            data: JSON.stringify(data),
+            dataType: 'json',
+            complete: result => {
+              $('#todo-insert').val('');
+              // $("#insert-form").hide();
+              movePage();
+            }
+          });
+        });
+
+        // update event
+        $("#update-form").submit(e => {
+          e.preventDefault();
+          var data = {
+            title: $('#todo-update').val()
+          };
+          $.ajax({
+            method: 'PUT',
+            contentType: 'application/json',
+            url: 'http://localhost:8080/api/todo/' + $('#todo-update-id').val(),
+            data: JSON.stringify(data),
+            dataType: 'json',
+            complete: result => {
+              $('#todo-update').val('');
+              $("#update-form").hide();
+              movePage();
+            }
+          });
+        });
+
+    });
+
+    function movePage(pageNum) {
+      pageNum = pageNum || 1;
+      $.ajax({
+        url: 'http://localhost:8080/api/todo?pageNum=' + pageNum + '&itemsPerPage=10'
+      }).done(data => {
+        console.log('data', data);
+        // retrive first page
+        $("#todo-table tbody").empty();
+        data.content.forEach(elem => {
+          var tr = $('<tr>').append($('<td>').html(elem.id))
+            .append($('<td>').html(elem.title))
+            .append($('<td>').html(moment(elem.createdTime).format('YYYY-MM-DD HH:mm:ss')))
+            .append($('<td>').html(elem.updatedTime ? moment(elem.updatedTime).format('YYYY-MM-DD HH:mm:ss') : ''));
+          if (elem.completed) {
+            tr.append($('<td>').html('완료됨'));
+          } else {
+            var btn = $('<button>').addClass('btn btn-success').text('완료처리').click(e => {
+              e.preventDefault();
+              console.log('e', e);
+              complete(elem.id);
+            });
+            tr.append($('<td>').append(btn));
+            tr.click(e => {
+              if (!$(e.target).hasClass("btn"))
+                updateForm(elem.id);
+            })
+          }
+          $("#todo-table tbody").append(tr);
+        });
+
+        // set pagination
+        $("#pagination").empty();
+        for (var i = 1; i <= data.totalPages; i ++) {
+          var li = $('<li>').addClass('page-item');
+          li.append($('<a>', {href: '#', onclick: 'movePage(' + i + ')'}).addClass('page-link').text(i));
+          $("#pagination").append(li);
+        }
+      });
+    }
+
+    function complete(id) {
+
+      $.ajax({
+        method: 'PUT',
+        url: 'http://localhost:8080/api/todo/' + id + '/complete'
+      }).done(data => {
+        movePage();
+      });
+    }
+
+    function createForm() {
+      $("#update-form").hide();
+      $("#insert-form").show();
+    }
+
+    function updateForm(id) {
+      $.ajax({
+        url: 'http://localhost:8080/api/todo/' + id
+      }).done(data => {
+        console.log('update', data);
+        $("#todo-update-id").val(data.id);
+        $("#todo-update").val(data.title);
+        $("#update-form").show();
+        $("#insert-form").hide();
+      });
+    }
+</script>
+</body>
+</html>
