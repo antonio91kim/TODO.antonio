@@ -8,4 +8,5 @@ public class ErrorCode {
 
     final static public int NOT_EXIST = -2001;
     final static public int WRONG_PARAMETER = -2002;
+    final static public int RELATED_EXIST = -2003;
 }

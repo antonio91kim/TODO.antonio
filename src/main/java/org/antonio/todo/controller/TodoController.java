@@ -60,6 +60,8 @@ public class TodoController {
             if (relatedList.size() == 0) {
                 todo.setCompleted(true);
                 todoService.update(id, todo);
+            } else {
+                throw new TodoException(ErrorCode.RELATED_EXIST, "Cannot complete due to related item(s)");
             }
         } else {
             throw new TodoException(ErrorCode.NOT_EXIST, "Todo not exist [id: " + id + "]");
@@ -80,6 +82,8 @@ public class TodoController {
     public ResponseEntity<Object> handleException(TodoException e) {
         if (e.getErrorCode() == ErrorCode.NOT_EXIST || e.getErrorCode() == ErrorCode.WRONG_PARAMETER)
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        else if (e.getErrorCode() == ErrorCode.RELATED_EXIST)
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.CONFLICT);
         else
             return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

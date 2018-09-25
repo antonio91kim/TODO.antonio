@@ -126,13 +126,17 @@
           $.ajax({
             method: 'POST',
             contentType: 'application/json',
-            url: 'http://localhost:8080/api/todo',
+            url: '/api/todo',
             data: JSON.stringify(data),
             dataType: 'json',
             complete: result => {
               $('#todo-insert').val('');
-              // $("#insert-form").hide();
+              $("#insert-form").hide();
               movePage();
+            },
+            error: err => {
+              if (err.status == 400)
+                window.alert("내용을 입력해주세요.");
             }
           });
         });
@@ -146,7 +150,7 @@
           $.ajax({
             method: 'PUT',
             contentType: 'application/json',
-            url: 'http://localhost:8080/api/todo/' + $('#todo-update-id').val(),
+            url: '/api/todo/' + $('#todo-update-id').val(),
             data: JSON.stringify(data),
             dataType: 'json',
             complete: result => {
@@ -162,7 +166,7 @@
     function movePage(pageNum) {
       pageNum = pageNum || 1;
       $.ajax({
-        url: 'http://localhost:8080/api/todo?pageNum=' + pageNum + '&itemsPerPage=10'
+        url: '/api/todo?pageNum=' + pageNum + '&itemsPerPage=10'
       }).done(data => {
         console.log('data', data);
         // retrive first page
@@ -199,13 +203,20 @@
       });
     }
 
+    // 완료 처리
     function complete(id) {
-
       $.ajax({
         method: 'PUT',
-        url: 'http://localhost:8080/api/todo/' + id + '/complete'
-      }).done(data => {
-        movePage();
+        url: '/api/todo/' + id + '/complete',
+        complete: data => {
+          movePage();
+        },
+        error: err => {
+          if (err.status == 409)
+            window.alert("완료되지 않은 연결된 할일이 남아있습니다.");
+          else if (err.status == 400)
+            window.alert("존재하지 않는 할일 입니다.");
+        }
       });
     }
 
@@ -216,7 +227,7 @@
 
     function updateForm(id) {
       $.ajax({
-        url: 'http://localhost:8080/api/todo/' + id
+        url: '/api/todo/' + id
       }).done(data => {
         console.log('update', data);
         $("#todo-update-id").val(data.id);
