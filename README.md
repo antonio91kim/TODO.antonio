@@ -1,6 +1,9 @@
 TODO Application
 ================
 
+![screenshot](./list.png)
+![pagination](./pagination.png)
+
 # 빌드 및 실행 방법
 
 ```console
@@ -32,6 +35,12 @@ java -jar todo.antonio-1.0-SNAPSHOT.jar
 |Parameter|Description|
 |---------|-----------|
 |title| 할일 내용|
+
+```json
+{
+  "title": "할일 내용"
+}
+```
 
 ### PUT /api/todo/{id}
 특정 아이디의 할일을 수정합니다.
@@ -91,3 +100,9 @@ java -jar todo.antonio-1.0-SNAPSHOT.jar
 * 완료처리시 참조에 걸리지 않은 경우 곧바로 완료처리가 가능하나 참조에 걸린 경우 like 검색으로 참조를 찾았습니다.
 * like 검색으로는 정확하게 알아낼 수 없으므로 (정규표현식을 쓰려했으나 시간이 없음) 맨뒤에 공백을 추가한 후 @id+공백 을 찾는 방식으로 완전한 참조를 찾을 수 있게 하였습니다.
 
+## 개발 언어
+
+* Backend: Java(1.8), Spring Boot
+* Frontend: HTML, Javascript, jquery, bootstrap, moment
+* Database: H2(HSQLDB)
+* Test: JUnit
